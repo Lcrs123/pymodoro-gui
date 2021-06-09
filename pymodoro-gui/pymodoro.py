@@ -126,13 +126,14 @@ class PomodoroApp(tkinter.Tk):
         try:
             if self.work_time.get() not in range(1,
                                                  60) or self.break_time.get() not in range(
-                1, 60):
+                    1, 60):
                 raise ValueError
             else:
                 return True
-        except:
-            ValueError(showerror(
-                message='Work and Break times must be numbers from 1 to 59 minutes'))
+        # TclError is raised by get() when entry is not a number
+        except (tkinter.TclError, ValueError):
+            showerror(
+                message='Work and Break times must be numbers from 1 to 59 minutes')
             return False
 
 def main():
