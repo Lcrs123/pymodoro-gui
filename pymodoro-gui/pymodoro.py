@@ -34,8 +34,9 @@ class PomodoroApp(tkinter.Tk):
                 to=59).grid(row=3, column=1)
         Separator(self.frame, orient='horizontal', ).grid(row=4, columnspan=2,sticky=tkinter.EW,pady=10)
         Button(self.frame, text='Start!',command=self.start_pomodoro).grid(row=5,columnspan=2)
+        self.bind(sequence='<Return>', func=self.start_pomodoro)
 
-    def start_pomodoro(self,interval_type='work'):
+    def start_pomodoro(self, event=None, interval_type='work'):
         if self.is_entry_valid():
             self.withdraw()
             self.make_countdown_gui()
@@ -123,13 +124,15 @@ class PomodoroApp(tkinter.Tk):
 
     def is_entry_valid(self):
         try:
-            assert self.work_time.get() in range(1,
-                                                 60) and self.break_time.get() in range(
-                1, 60)
-            return True
+            if self.work_time.get() not in range(1,
+                                                 60) or self.break_time.get() not in range(
+                1, 60):
+                raise ValueError
+            else:
+                return True
         except:
-            AssertionError(showerror('Error',
-                                     message='Work and Break times must be numbers from 1 to 59 minutes'))
+            ValueError(showerror(
+                message='Work and Break times must be numbers from 1 to 59 minutes'))
             return False
 
 def main():
