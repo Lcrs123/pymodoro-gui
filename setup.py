@@ -1,33 +1,25 @@
-from distutils.core import setup
+import setuptools
 
-setup(
-    name='pymodoro',  # How you named your package folder (MyLib)
-    packages=['pymodoro'],  # Chose the same as "name"
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
+setuptools.setup(
+    name='pymodoro',
+    packages=setuptools.find_packages(),
     version='1.0',
-    # Start with a small number and increase it with every change you make
     license='GPL 3.0',
-    # Chose a license from here: https://help.github.com/articles/licensing-a-repository
     description='A python pomodoro app with a GUI for Windows',
-    # Give a short description about your library
-    author='Lucas Camillo',  # Type in your name
-    author_email='lucascamillo333@hotmail.com',  # Type in your E-Mail
-    url='git remote add origin https://github.com/Lcrs123/pymodoro.git',
-    # Provide either the link to your github or to your website
-    download_url='https://github.com/Lcrs123/pymodoro/archive/refs/tags/v1.0.tar.gz',
-    # I explain this later on
-    keywords=['pomodoro', 'gui', 'windows'],
-    # Keywords that define your package best
-    install_requires=[  # I get to this in a second
-    ],
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    author='Lucas Camillo',
+    author_email='lucascamillo333@hotmail.com',
+    url='https://github.com/Lcrs123/pymodoro.git',
+    keywords=['pomodoro', 'gui', 'windows', 'tkinter'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
-        # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
-        'Intended Audience :: Anyone',
-        # Define that your audience are developers
-        'Topic :: Software Development :: Build Tools',
-        'License :: OSI Approved :: GPL 3.0 License',  # Again, pick a license
-        'Programming Language :: Python :: 3',
-        # Specify which pyhton versions that you want to support
+        'Intended Audience :: End Users/Desktop',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Programming Language :: Python :: 3.7',
+        'Operating System :: Microsoft :: Windows',
     ],
 )
