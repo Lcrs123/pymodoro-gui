@@ -1,4 +1,4 @@
-# **Pymodoro, a python pomodoro app with a GUI for Windows**
+# **Pymodoro-gui, a python pomodoro app with a GUI for Windows**
 
 A simple GUI python app for using the [pomodoro technique](https://en.wikipedia.org/wiki/Pomodoro_Technique) when working.
 
@@ -8,17 +8,17 @@ Computer will beep and show a popup when every interval (work/break) is done.
 
 ###### **To install:**
 
-`pip install pymodoro`
+`pip install pymodoro-gui`
 
 ###### **To run the package:**
 
-`python -m pymodoro`
+`python -m pymodoro-gui`
 
 ###### Screens:
 
-![Screen1](https://github.com/Lcrs123/pymodoro/blob/master/pymodoro/resources/Screen1.png?raw=True) 
+![Screen1](https://github.com/Lcrs123/pymodoro-gui/blob/master/pymodoro-gui/resources/Screen1.png?raw=True) 
 
-![Screen2](https://github.com/Lcrs123/pymodoro/blob/master/pymodoro/resources/Screen2.png?raw=True)
+![Screen2](https://github.com/Lcrs123/pymodoro-gui/blob/master/pymodoro-gui/resources/Screen2.png?raw=True)
 
 
 
