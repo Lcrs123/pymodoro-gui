@@ -1,21 +1,17 @@
 import tkinter, datetime
 from tkinter.ttk import *
-from tkinter import messagebox
-import threading
-from time import sleep
+import winsound
 
 class tkinterApp(tkinter.Tk):
     def __init__(self):
         super().__init__()
+        self.title('Pymodoro')
+        self.resizable(width=False,height=False)
         self.work_time = tkinter.IntVar(self,value=25)
         self.interval_time = tkinter.IntVar(self,value=5)
         self.time_dict = {'work':self.work_time,'interval':self.interval_time}
+        self.interval_count = 0
         self.cycles = tkinter.IntVar(self,value=0)
-        self.work_count_down_thread = threading.Thread(
-            target=self.start_countdown,name='Work CD Thread',args=('work',))
-        self.interval_count_down_thread = threading.Thread(target=self.start_countdown,name='interval CD Thread',args=('interval',))
-        self.thread_dict = {'work': self.work_count_down_thread,
-                       'interval': self.interval_count_down_thread}
         self.init_gui()
 
     def init_gui(self):
@@ -32,58 +28,81 @@ class tkinterApp(tkinter.Tk):
         Separator(self.frame, orient='horizontal', ).grid(row=4, columnspan=2,sticky=tkinter.EW,pady=10)
         Button(self.frame, text='Start!',command=self.start_pomodoro).grid(row=5,columnspan=2)
 
-    def start_pomodoro(self,interval_type='interval'):
+    def start_pomodoro(self,interval_type='work'):
         self.withdraw()
+        self.make_countdown_gui()
+        self.play_beep()
+        final_time = datetime.datetime.now()+datetime.timedelta(minutes=self.time_dict[interval_type].get())
+        self.countdown(final_time=final_time)
+
+    def make_countdown_gui(self,interval_type='work'):
         self.timecounter_toplevel = tkinter.Toplevel(self)
         chosen_worktime = datetime.time(minute=self.work_time.get())
-        self.chosen_worktime = tkinter.StringVar(self,value=f'{chosen_worktime.minute}:{chosen_worktime.second}')
-        self.current_stage_str = tkinter.StringVar(self,value=(f'{interval_type.capitalize()}!'))
-        Label(self.timecounter_toplevel, textvariable=self.current_stage_str,justify='center').grid(row=0,columnspan=2)
+        self.chosen_worktime = tkinter.StringVar(self,
+                                                 value=f'{chosen_worktime.minute}:{chosen_worktime.second}')
+        self.current_stage_str = tkinter.StringVar(self, value=(
+            f'{interval_type.capitalize()}!'))
+        Label(self.timecounter_toplevel, textvariable=self.current_stage_str,
+              justify='center').grid(row=0, columnspan=2)
         Separator(self.frame, orient='horizontal', ).grid(row=1, columnspan=2,
                                                           sticky=tkinter.EW,
                                                           pady=10)
-        Label(self.timecounter_toplevel,text='Time remaining:').grid(row=2,column=0)
-        Label(self.timecounter_toplevel,textvariable=self.chosen_worktime).grid(row=2,column=1)
-        Label(self.timecounter_toplevel,text='Completed cycles:').grid(row=3,column=0)
-        Label(self.timecounter_toplevel,textvariable=self.cycles.get()//2).grid(row=3,column=1)
-        Button(self.timecounter_toplevel,text='Stop',command=self.stop_pomodoro).grid(row=4,column=0,columnspan=2)
-        self.thread_dict[interval_type].start()
-
+        Label(self.timecounter_toplevel, text='Time remaining:').grid(row=2,
+                                                                      column=0)
+        Label(self.timecounter_toplevel,
+              textvariable=self.chosen_worktime).grid(row=2, column=1)
+        Label(self.timecounter_toplevel, text='Completed cycles:').grid(row=3,
+                                                                        column=0)
+        Label(self.timecounter_toplevel, textvariable=self.cycles).grid(row=3,
+                                                                        column=1)
+        Button(self.timecounter_toplevel, text='Stop',
+               command=self.stop_pomodoro).grid(row=4, column=0, columnspan=2)
+        Separator(self.frame, orient='horizontal', ).grid(row=1, columnspan=2,
+                                                          sticky=tkinter.EW,
+                                                          pady=10)
 
     def stop_pomodoro(self):
         self.timecounter_toplevel.destroy()
         self.wm_deiconify()
 
-    def start_countdown(self,interval_type:str='work'):
+    def countdown(self,final_time,interval_type:str='work'):
         assert interval_type in self.time_dict.keys()
-        print(f'Starting thread {self.thread_dict[interval_type]}')
-        final_time = datetime.datetime.now()+ datetime.timedelta(minutes=self.time_dict[interval_type].get())
-        if interval_type == 'work':
-            if self.interval_count_down_thread.is_alive():
-                self.interval_count_down_thread.join()
-        elif interval_type == 'interval':
-            if self.work_count_down_thread.is_alive():
-                self.work_count_down_thread.join()
-        while datetime.datetime.now() < final_time and self.timecounter_toplevel.winfo_exists():
+        if datetime.datetime.now() < final_time and self.timecounter_toplevel.winfo_exists():
             diff = final_time - datetime.datetime.now()
             min_and_seconds = divmod(diff.seconds,60)
             self.chosen_worktime.set(value=f'{min_and_seconds[0]}:{min_and_seconds[1]}')
-            sleep(0.1)
-        print(datetime.datetime.now() >= final_time)
-        if datetime.datetime.now() >= final_time:
-            if type == 'work':
-                self.switch_countdown('interval')
-            elif type == 'interval':
-                self.switch_countdown('work')
-
+            self.after(100,self.countdown,final_time,interval_type)
+        elif datetime.datetime.now() >= final_time:
+            if interval_type == 'work':
+                self.switch_countdown(switch_to='interval')
+            elif interval_type == 'interval':
+                self.switch_countdown(switch_to='work')
 
     def switch_countdown(self,switch_to:str):
-        message_dict = {'work':'Break time is over, back to work!','interval':'Time for a break!'}
-        messagebox.showinfo(message=message_dict[switch_to])
+        self.play_beep()
+        self.update_cycle_count()
+        self.display_switch_message(switch_to=switch_to)
         self.current_stage_str.set(value=f'{switch_to.capitalize()}!')
-        self.thread_dict[switch_to].start()
+        final_time = datetime.datetime.now() + datetime.timedelta(minutes=self.time_dict[switch_to].get())
+        self.countdown(final_time=final_time,interval_type=switch_to)
 
+    def display_switch_message(self,switch_to):
+        message_dict = {'work': 'Break time is over, back to work!',
+                        'interval': 'Time for a break!'}
+        self.timecounter_toplevel.wm_deiconify()
+        mbox = tkinter.Toplevel(master=self.timecounter_toplevel)
+        Label(mbox,text=message_dict[switch_to]).pack()
+        Button(mbox,command=mbox.destroy,text='Ok').pack()
+        mbox.wm_deiconify()
 
+    def update_cycle_count(self):
+        self.interval_count+=1
+        self.cycles.set(value=self.interval_count // 2)
+
+    @staticmethod
+    def play_beep(frequency=1000,duration=800,repeat=3):
+        for _ in range(repeat):
+            winsound.Beep(frequency,duration)
 
 def main():
     app = tkinterApp()
