@@ -5,15 +5,15 @@ setup(
     packages=['pymodoro'],  # Chose the same as "name"
     version='1.0',
     # Start with a small number and increase it with every change you make
-    license='MIT',
+    license='GPL 3.0',
     # Chose a license from here: https://help.github.com/articles/licensing-a-repository
     description='A python pomodoro app with a GUI for Windows',
     # Give a short description about your library
     author='Lucas Camillo',  # Type in your name
     author_email='lucascamillo333@hotmail.com',  # Type in your E-Mail
-    url='https://github.com/user/reponame',
+    url='git remote add origin https://github.com/Lcrs123/pymodoro.git',
     # Provide either the link to your github or to your website
-    download_url='https://github.com/user/reponame/archive/v_01.tar.gz',
+    download_url='https://github.com/Lcrs123/pymodoro/archive/refs/tags/v1.0.tar.gz',
     # I explain this later on
     keywords=['pomodoro', 'gui', 'windows'],
     # Keywords that define your package best

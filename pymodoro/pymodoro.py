@@ -22,7 +22,9 @@ class PomodoroApp(tkinter.Tk):
         self.frame.grid(row=0,column=0, sticky=tkinter.NSEW)
         self.frame.columnconfigure(0,weight=1)
         self.frame.rowconfigure(0,weight=1)
-        Label(self.frame,text='Welcome to Pymodoro!\nChoose the amount of minutes for work and interval and get to work!',justify='center').grid(row=0,column=0,columnspan=2)
+        Label(self.frame,
+              text='Welcome to Pymodoro!\nChoose the amount of minutes for work/break and get to work!',
+              justify='center').grid(row=0, column=0, columnspan=2)
         Separator(self.frame, orient='horizontal',).grid(row=1,columnspan=2,sticky=tkinter.EW,pady=10)
         Label(self.frame, text='Work:',justify='right').grid(row=2, column=0)
         Spinbox(self.frame, textvariable=self.work_time, from_=1, increment=1,
