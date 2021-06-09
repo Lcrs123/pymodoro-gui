@@ -1,10 +1,11 @@
 import datetime
 import tkinter
-import winsound
+from tkinter.messagebox import showerror
 from tkinter.ttk import *
+from winsound import Beep
 
 
-class tkinterApp(tkinter.Tk):
+class PomodoroApp(tkinter.Tk):
     def __init__(self):
         super().__init__()
         self.title('Pymodoro')
@@ -24,23 +25,29 @@ class tkinterApp(tkinter.Tk):
         Label(self.frame,text='Welcome to Pymodoro!\nChoose the amount of minutes for work and interval and get to work!',justify='center').grid(row=0,column=0,columnspan=2)
         Separator(self.frame, orient='horizontal',).grid(row=1,columnspan=2,sticky=tkinter.EW,pady=10)
         Label(self.frame, text='Work:',justify='right').grid(row=2, column=0)
-        Spinbox(self.frame,textvariable=self.work_time,from_=1,increment=1,to=999).grid(row=2,column=1)
+        Spinbox(self.frame, textvariable=self.work_time, from_=1, increment=1,
+                to=59).grid(row=2, column=1)
         Label(self.frame, text='Break:', justify='right').grid(row=3, column=0)
         Spinbox(self.frame, textvariable=self.break_time, from_=1, increment=1,
-                to=999).grid(row=3, column=1)
+                to=59).grid(row=3, column=1)
         Separator(self.frame, orient='horizontal', ).grid(row=4, columnspan=2,sticky=tkinter.EW,pady=10)
         Button(self.frame, text='Start!',command=self.start_pomodoro).grid(row=5,columnspan=2)
 
     def start_pomodoro(self,interval_type='work'):
-        self.withdraw()
-        self.make_countdown_gui()
-        self.play_beep(repeat=2)
-        final_time = datetime.datetime.now()+datetime.timedelta(minutes=self.time_dict[interval_type].get())
-        self.countdown(final_time=final_time)
+        if self.is_entry_valid():
+            self.withdraw()
+            self.make_countdown_gui()
+            self.play_beep(repeat=2)
+            final_time = datetime.datetime.now() + datetime.timedelta(
+                minutes=self.time_dict[interval_type].get())
+            self.countdown(final_time=final_time)
+        else:
+            return
 
     def make_countdown_gui(self,interval_type='work'):
         self.countdown_toplevel = tkinter.Toplevel(self)
         self.countdown_toplevel.resizable(width=False, height=False)
+        self.countdown_toplevel.title('Pymodoro')
         cd_frame = Frame(self.countdown_toplevel, padding='5 5')
         cd_frame.grid(row=0, column=0, sticky=tkinter.NSEW)
         cd_frame.columnconfigure(0, weight=1)
@@ -110,11 +117,23 @@ class tkinterApp(tkinter.Tk):
     @staticmethod
     def play_beep(frequency=1000,duration=800,repeat=3):
         for _ in range(repeat):
-            winsound.Beep(frequency,duration)
+            Beep(frequency, duration)
+
+    def is_entry_valid(self):
+        try:
+            assert self.work_time.get() in range(1,
+                                                 60) and self.break_time.get() in range(
+                1, 60)
+            return True
+        except:
+            AssertionError(showerror('Error',
+                                     message='Work and Break times must be numbers from 1 to 59 minutes'))
+            return False
 
 def main():
-    app = tkinterApp()
+    app = PomodoroApp()
     app.mainloop()
+
 
 if __name__ == '__main__':
     main()
