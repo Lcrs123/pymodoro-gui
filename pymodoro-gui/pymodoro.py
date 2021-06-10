@@ -3,6 +3,7 @@ import tkinter
 from tkinter.messagebox import showerror
 from tkinter.ttk import *
 from winsound import Beep
+from itertools import cycle
 
 
 class PomodoroApp(tkinter.Tk):
@@ -13,6 +14,7 @@ class PomodoroApp(tkinter.Tk):
         self.work_time = tkinter.IntVar(self, value=25)
         self.break_time = tkinter.IntVar(self, value=5)
         self.time_dict = {'work': self.work_time, 'break': self.break_time}
+        self.interval_cycle = cycle(['break','work'])
         self.interval_count = 0
         self.cycles = tkinter.IntVar(self, value=0)
         self.paused = tkinter.BooleanVar(self, value=False, name='PAUSE_STATE')
@@ -49,9 +51,9 @@ class PomodoroApp(tkinter.Tk):
             self.withdraw()
             self.make_countdown_gui()
             self.play_beep(repeat=2)
-            self.final_time = datetime.datetime.now() + datetime.timedelta(
+            final_time = datetime.datetime.now() + datetime.timedelta(
                 minutes=self.time_dict[interval_type].get())
-            self.countdown(final_time=self.final_time)
+            self.countdown(final_time=final_time)
         else:
             return
 
@@ -95,6 +97,7 @@ class PomodoroApp(tkinter.Tk):
 
     def stop_pomodoro(self):
         self.countdown_toplevel.destroy()
+        self.reset_pause()
         self.wm_deiconify()
 
     def countdown(self, final_time: datetime.datetime,
@@ -113,12 +116,13 @@ class PomodoroApp(tkinter.Tk):
                     value=f'{min_and_seconds[0]}:{min_and_seconds[1]}')
                 self.after(100, self.countdown, final_time, interval_type)
             elif now >= final_time:
-                if interval_type == 'work':
-                    self.switch_countdown(switch_to='break')
-                elif interval_type == 'break':
-                    self.switch_countdown(switch_to='work')
+                self.switch_countdown(switch_to=next(self.interval_cycle))
+
         else:
             self.wait_variable(name='PAUSE_STATE')
+            # stop the function if the countdown was closed while paused
+            if not self.countdown_toplevel.winfo_exists():
+                return
             time_paused = datetime.datetime.now() - self.pause_time
             min_and_seconds = divmod(time_paused.seconds, 60)
             final_time = final_time + datetime.timedelta(
@@ -171,7 +175,11 @@ class PomodoroApp(tkinter.Tk):
             self.pause_button_text.set(value='Unpause')
         else:
             self.pause_button_text.set(value='Pause')
-        pass
+
+    def reset_pause(self):
+        self.pause_button_text.set(value='Pause')
+        self.paused.set(value=False)
+        self.pause_time = None
 
 
 def main():
