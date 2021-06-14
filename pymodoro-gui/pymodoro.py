@@ -11,16 +11,40 @@ class PomodoroApp(tkinter.Tk):
         super().__init__()
         self.title('Pymodoro')
         self.resizable(width=False, height=False)
+        self.init_time_attributes()
+        self.init_longbreak_attributes()
+        self.init_cycles_attributes()
+        self.init_pause_attributes()
+        self.current_stage_dict = {
+            'work': "Work!",
+            'break': "Break!",
+            'longbreak': "Long break!"
+        }
+        self.init_gui()
+
+    def init_time_attributes(self):
         self.work_time = tkinter.IntVar(self, value=25)
         self.break_time = tkinter.IntVar(self, value=5)
-        self.time_dict = {'work': self.work_time, 'break': self.break_time}
+        self.longbreak_time = tkinter.IntVar(self,value=15)
+        self.time_dict = {
+            'work': self.work_time,
+            'break': self.break_time,
+            'longbreak': self.longbreak_time
+        }
+
+    def init_longbreak_attributes(self):
+        self.cycles_before_longbreak = tkinter.IntVar(self, value=3)
+        self.do_longbreak = tkinter.BooleanVar(self, value=True)
+
+    def init_cycles_attributes(self):
         self.interval_cycle = None
         self.interval_count = 0
         self.cycles = tkinter.IntVar(self, value=0)
+
+    def init_pause_attributes(self):
         self.paused = tkinter.BooleanVar(self, value=False, name='PAUSE_STATE')
         self.pause_button_text = tkinter.StringVar(self, value='Pause')
         self.pause_time = None
-        self.init_gui()
 
     def init_gui(self):
         self.frame = Frame(self, padding='5 5')
@@ -29,31 +53,58 @@ class PomodoroApp(tkinter.Tk):
         self.frame.rowconfigure(0, weight=1)
         Label(self.frame,
               text='Welcome to Pymodoro!\nChoose the amount of minutes for work/break and get to work!',
-              justify='center').grid(row=0, column=0, columnspan=2)
-        Separator(self.frame, orient='horizontal', ).grid(row=1, columnspan=2,
+              justify='center'
+              ).grid(row=0, column=0, columnspan=2)
+        Separator(self.frame, orient='horizontal').grid(row=1, columnspan=2,
                                                           sticky=tkinter.EW,
-                                                          pady=10)
+                                                          pady=10
+                                                        )
         Label(self.frame, text='Work:', justify='right').grid(row=2, column=0)
         Spinbox(self.frame, textvariable=self.work_time, from_=1, increment=1,
-                to=59).grid(row=2, column=1)
+                to=59
+                ).grid(row=2, column=1)
         Label(self.frame, text='Break:', justify='right').grid(row=3, column=0)
         Spinbox(self.frame, textvariable=self.break_time, from_=1, increment=1,
-                to=59).grid(row=3, column=1)
+                to=59
+                ).grid(row=3, column=1)
         Separator(self.frame, orient='horizontal', ).grid(row=4, columnspan=2,
                                                           sticky=tkinter.EW,
-                                                          pady=10)
-        Button(self.frame, text='Start!', command=self.start_pomodoro).grid(
-            row=5, columnspan=2)
+                                                          pady=10
+                                                          )
+        Label(self.frame, text='Do long breaks?', justify='right').grid(row=5,
+                                                                        column=0
+                                                                        )
+        Checkbutton(self.frame,variable=self.do_longbreak,onvalue=True,
+                    offvalue=False,command=self.toggle_longbreak
+                    ).grid(row=5,column=1)
+        Label(self.frame, text='Work cycles before long break:',
+              justify='right'
+              ).grid(row=6,column=0)
+        Spinbox(self.frame, textvariable=self.cycles_before_longbreak, from_=1,
+                increment=1,to=59, name='longbreak_cycles'
+                ).grid(row=6, column=1)
+        Label(self.frame, text='Long Break time:', justify='right').grid(row=7,
+                                                                         column=0
+                                                                         )
+        Spinbox(self.frame, textvariable=self.longbreak_time, from_=1, increment=1,
+                to=59, name='longbreak_time'
+                ).grid(row=7, column=1)
+        Separator(self.frame, orient='horizontal').grid(row=8, columnspan=2,
+                                                          sticky=tkinter.EW,
+                                                          pady=10
+                                                          )
+        Button(self.frame, text='Start!', command=self.start_pomodoro
+               ).grid(row=9,columnspan=2)
         self.bind(sequence='<Return>', func=self.start_pomodoro)
 
-    def start_pomodoro(self, event=None, interval_type='work'):
+    def start_pomodoro(self, event=None):
         if self.is_entry_valid():
             self.withdraw()
+            self.interval_cycle = self.make_interval_cycle()
             self.make_countdown_gui()
-            self.interval_cycle = cycle(['break', 'work'])
             self.play_beep(repeat=2)
             final_time = datetime.datetime.now() + datetime.timedelta(
-                minutes=self.time_dict[interval_type].get())
+                minutes=self.time_dict[next(self.interval_cycle)].get())
             self.countdown(final_time=final_time)
         else:
             return
@@ -68,37 +119,41 @@ class PomodoroApp(tkinter.Tk):
         cd_frame.rowconfigure(0, weight=1)
         chosen_worktime = datetime.time(minute=self.work_time.get())
         self.chosen_worktime = tkinter.StringVar(self,
-                                                 value=f'{chosen_worktime.minute}:{chosen_worktime.second}')
-        self.current_stage_str = tkinter.StringVar(self, value=(
-            f'{interval_type.capitalize()}!'))
-        Label(cd_frame, textvariable=self.current_stage_str,
-              justify='center').grid(row=0, columnspan=2)
+                                                 value=f'{chosen_worktime.minute}:{chosen_worktime.second}'
+                                                 )
+        self.current_stage_str = tkinter.StringVar(self,
+                                                   value=(f'{self.current_stage_dict[interval_type]}')
+                                                   )
+        Label(cd_frame, textvariable=self.current_stage_str,justify='center'
+              ).grid(row=0, columnspan=2)
         Separator(cd_frame, orient='horizontal').grid(row=1, columnspan=3,
                                                       sticky=tkinter.EW,
-                                                      pady=10)
+                                                      pady=10
+                                                      )
         Label(cd_frame, text='Time remaining:').grid(row=2, column=0)
         Label(cd_frame, textvariable=self.chosen_worktime).grid(row=2,
-                                                                column=1)
+                                                                column=1
+                                                                )
         Label(cd_frame, text='Completed cycles:').grid(row=3, column=0)
         Label(cd_frame, textvariable=self.cycles).grid(row=3, column=1)
         Separator(cd_frame, orient='horizontal').grid(row=4, columnspan=3,
                                                       sticky=tkinter.EW,
-                                                      pady=10)
+                                                      pady=10
+                                                      )
         Button(cd_frame, text='Exit', command=self.stop_pomodoro).grid(row=5,
                                                                        column=0,
-                                                                       columnspan=2)
+                                                                       columnspan=2
+                                                                       )
         Button(cd_frame, textvariable=self.pause_button_text,
-               command=self.pause_unpause).grid(row=6,
-                                                column=0,
-                                                columnspan=2)
+               command=self.pause_unpause).grid(row=6,column=0,columnspan=2)
         # Needed to get back to the start if user closes countdown through "x"
         # instead of clicking exit
-        self.countdown_toplevel.protocol('WM_DELETE_WINDOW',
-                                         self.stop_pomodoro)
+        self.countdown_toplevel.protocol('WM_DELETE_WINDOW',self.stop_pomodoro)
 
     def stop_pomodoro(self):
         self.countdown_toplevel.destroy()
         self.reset_pause()
+        self.reset_cycles()
         self.wm_deiconify()
 
     def countdown(self, final_time: datetime.datetime,
@@ -134,14 +189,17 @@ class PomodoroApp(tkinter.Tk):
         self.play_beep()
         self.update_cycle_count()
         self.display_switch_message(switch_to=switch_to)
-        self.current_stage_str.set(value=f'{switch_to.capitalize()}!')
+        self.current_stage_str.set(value=self.current_stage_dict[switch_to])
         final_time = datetime.datetime.now() + datetime.timedelta(
             minutes=self.time_dict[switch_to].get())
         self.countdown(final_time=final_time, interval_type=switch_to)
 
     def display_switch_message(self, switch_to):
-        message_dict = {'work': 'Break time is over, back to work!',
-                        'break': 'Time for a break!'}
+        message_dict = {
+            'work': 'Break time is over, back to work!',
+            'break': 'Time for a break!',
+            'longbreak': 'Time for a long break!'
+        }
         self.countdown_toplevel.wm_deiconify()
         mbox = tkinter.Toplevel(master=self.countdown_toplevel)
         Label(mbox, text=message_dict[switch_to]).pack()
@@ -159,14 +217,19 @@ class PomodoroApp(tkinter.Tk):
 
     def is_entry_valid(self):
         try:
-            if self.work_time.get() not in range(1,60) or self.break_time.get() not in range(1, 60):
+            if any(x.get() not in range(1,60) for x in [
+                self.work_time,
+                self.break_time,
+                self.longbreak_time,
+                self.cycles_before_longbreak
+            ]
+                   ):
                 raise ValueError
             else:
                 return True
         # TclError is raised by IntVar.get() when entry is not a number
         except (tkinter.TclError, ValueError):
-            showerror(
-                message='Work and Break times must be numbers from 1 to 59 minutes')
+            showerror(message='Work, Break, Long Break times and cycles must be numbers from 1 to 59 minutes')
             return False
 
     def pause_unpause(self):
@@ -182,8 +245,31 @@ class PomodoroApp(tkinter.Tk):
         self.paused.set(value=False)
         self.pause_time = None
 
+    def reset_cycles(self):
+        self.cycles.set(value=0)
+        self.interval_count = 0
 
-def main():
+    def toggle_longbreak(self):
+        # Setting True to "active", "on" or "normal" doesn't work. The "disabled"
+        # flag works independently and must be reversed through !disabled
+        state_dict = {
+            True:'!disabled',
+            False:'disabled'
+        }
+        longbreak_widgets = [x for x in self.frame.winfo_children() if str(x.winfo_name()).startswith('longbreak')]
+        for x in longbreak_widgets:
+            x.state([state_dict[self.do_longbreak.get()]])
+
+    def make_interval_cycle(self):
+        if self.do_longbreak.get():
+            interval_cycle = ['work','break']*self.cycles_before_longbreak.get()
+            interval_cycle[-1] = 'longbreak'
+            return cycle(interval_cycle)
+        else:
+            return cycle(['work','break'])
+
+
+def main() -> None:
     app = PomodoroApp()
     app.mainloop()
 
