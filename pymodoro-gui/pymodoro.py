@@ -14,7 +14,7 @@ class PomodoroApp(tkinter.Tk):
         self.work_time = tkinter.IntVar(self, value=25)
         self.break_time = tkinter.IntVar(self, value=5)
         self.time_dict = {'work': self.work_time, 'break': self.break_time}
-        self.interval_cycle = cycle(['break','work'])
+        self.interval_cycle = None
         self.interval_count = 0
         self.cycles = tkinter.IntVar(self, value=0)
         self.paused = tkinter.BooleanVar(self, value=False, name='PAUSE_STATE')
@@ -50,6 +50,7 @@ class PomodoroApp(tkinter.Tk):
         if self.is_entry_valid():
             self.withdraw()
             self.make_countdown_gui()
+            self.interval_cycle = cycle(['break', 'work'])
             self.play_beep(repeat=2)
             final_time = datetime.datetime.now() + datetime.timedelta(
                 minutes=self.time_dict[interval_type].get())
