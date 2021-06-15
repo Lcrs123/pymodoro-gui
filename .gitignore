@@ -34,6 +34,7 @@ MANIFEST
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
+!pymodoro-gui/pymodoro.spec
 
 # Installer logs
 pip-log.txt
@@ -235,3 +236,9 @@ pyvenv.cfg
 .venv
 pip-selfcheck.json
 
+.idea/.gitignore
+.idea/inspectionProfiles/
+.idea/misc.xml
+.idea/modules.xml
+.idea/pymodoro.iml
+.idea/vcs.xml
