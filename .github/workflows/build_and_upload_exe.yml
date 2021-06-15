@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Build executable for windows
+name: Build executable for windows and commit to branch executable
 
 # Controls when the action will run. 
 on:
@@ -19,10 +19,14 @@ jobs:
       uses: JackMcKew/pyinstaller-action-windows@main
       with:
         path: pymodoro-gui
-
-    - uses: actions/upload-artifact@v2
+    
+    - name: Change branch
+      uses: actions/checkout@v2
       with:
-        name: pymodoro-exe
-        path: pymodoro-gui/dist/windows
-
-
+        ref: executable
+    
+    - name: Commit and push
+      run: |    
+          git add pymodoro-gui/dist/windows
+          git commit -m "New executable"
+          git push      
