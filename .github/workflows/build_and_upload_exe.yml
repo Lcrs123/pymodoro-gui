@@ -9,6 +9,7 @@ on:
 
 jobs:
   job_1:
+      name: Build and Upload
       runs-on: ubuntu-latest
       steps:
       - uses: actions/checkout@v2
@@ -26,6 +27,8 @@ jobs:
           retention-days: 1
 
   job_2:
+    name: Download and push to executable branch
+    needs: job_1
     runs-on: ubuntu-latest
     steps:
     
