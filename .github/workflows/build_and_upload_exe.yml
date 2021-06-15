@@ -20,13 +20,28 @@ jobs:
       with:
         path: pymodoro-gui
     
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2.2.3
+      with:
+        name: pymodoro-exe
+        path: pymodoro-gui/dist/windows
+        retention-days: 1
+    
     - name: Change branch
       uses: actions/checkout@v2
       with:
         ref: executable
     
-    - name: Commit and push
+    - name: Download a Build Artifact
+      uses: actions/download-artifact@v2.0.9
+      with:
+        # Artifact name
+        name: pymodoro-exe
+        # Destination path
+        path: Executable/
+    
+    - name: Add, commit and push
       run: |    
-          git add pymodoro-gui/dist/windows
+          git add Executable/
           git commit -m "New executable"
-          git push      
+          git push
