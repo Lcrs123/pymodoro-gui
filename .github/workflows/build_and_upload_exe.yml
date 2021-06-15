@@ -22,7 +22,7 @@ jobs:
 
     - uses: actions/upload-artifact@v2
       with:
-        name: name-of-artifact
+        name: pymodoro-exe
         path: pymodoro-gui/dist/windows
 
 
