@@ -17,13 +17,13 @@ jobs:
       - name: Package Application
         uses: JackMcKew/pyinstaller-action-windows@main
         with:
-          path: pymodoro-gui
+          path: pymodorogui
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.3
         with:
           name: pymodoro-exe
-          path: pymodoro-gui/dist/windows
+          path: pymodorogui/dist/windows
           retention-days: 1
 
   job_2:
