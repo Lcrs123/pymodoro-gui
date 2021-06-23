@@ -4,9 +4,12 @@ block_cipher = None
 
 
 a = Analysis(['pymodoro.py'],
-             pathex=['C:\\Users\\decon.lucasc\\PycharmProjects\\pymodoro\\pymodoro-gui'],
+             pathex=['C:\\Users\\decon.lucasc\\PycharmProjects\\pymodoro'],
              binaries=[],
-             datas=[],
+             datas=[
+             ('resources/icon.png','resources'),
+             ('resources/beep.wav','resources'),
+             ],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -35,3 +38,4 @@ coll = COLLECT(exe,
                upx=True,
                upx_exclude=[],
                name='pymodoro')
+

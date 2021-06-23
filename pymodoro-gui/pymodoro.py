@@ -4,20 +4,17 @@ from tkinter.messagebox import showerror
 from tkinter.ttk import *
 from winsound import Beep, PlaySound, SND_FILENAME
 from itertools import cycle
-import importlib.resources as resource
-from typing import Tuple
-try:
-  from . import resources
-except ImportError:
-  import resources
+from resources import BEEP_PATH, ICON_PATH
 
 class PomodoroApp(tkinter.Tk):
-  BEEP_FILEINFO: Tuple[str, str] = ('resources', 'beep.wav')
+  BEEP_PATH = BEEP_PATH
+  ICON_PATH = ICON_PATH
 
-  def __init__(self):
+  def __init__(self,icon_path=ICON_PATH):
     super().__init__()
     self.title('Pymodoro')
     self.resizable(width=False, height=False)
+    self.iconphoto(True, tkinter.PhotoImage(file=icon_path))
     self.init_time_attributes()
     self.init_longbreak_attributes()
     self.init_cycles_attributes()
@@ -230,11 +227,10 @@ class PomodoroApp(tkinter.Tk):
     except RuntimeError:
       self.play_mb(repeat=repeat)
 
-  def play_mb(self, repeat, soundinfo=BEEP_FILEINFO):
+  def play_mb(self, repeat, beep_path=BEEP_PATH):
     try:
-      with resource.path(*soundinfo) as beep_path:
         for _ in range(repeat):
-          PlaySound(str(beep_path.resolve()), SND_FILENAME)
+          PlaySound(beep_path, SND_FILENAME)
     except RuntimeError:
       self.beep_fail = True
       showerror(message="Could not play standard beep or beep.wave file.\n"

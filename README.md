@@ -16,9 +16,6 @@ Computer will beep and show a popup when every interval (work/break) is done.
 
 ###### Screens:
 
-![Screen1](https://github.com/Lcrs123/pymodoro-gui/blob/master/pymodoro-gui/resources/Screen1.png?raw=True) 
+![Screen1](https://github.com/Lcrs123/pymodoro-gui/blob/master/pymodoro-gui/Screenshots/Screen1.png?raw=True) 
 
-![Screen2](https://github.com/Lcrs123/pymodoro-gui/blob/master/pymodoro-gui/resources/Screen2.png?raw=True)
-
-
-
+![Screen2](https://github.com/Lcrs123/pymodoro-gui/blob/master/pymodoro-gui/Screenshots/Screen2.png?raw=True)
