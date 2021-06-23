@@ -20,6 +20,7 @@ class PomodoroApp(tkinter.Tk):
             'break': "Break!",
             'longbreak': "Long break!"
         }
+        self.beep_fail = False
         self.init_gui()
 
     def init_time_attributes(self):
@@ -210,10 +211,16 @@ class PomodoroApp(tkinter.Tk):
         self.interval_count += 1
         self.cycles.set(value=self.interval_count // 2)
 
-    @staticmethod
-    def play_beep(frequency=1000, duration=800, repeat=3):
-        for _ in range(repeat):
-            Beep(frequency, duration)
+    def play_beep(self,frequency=1000, duration=800, repeat=3):
+        if self.beep_fail:
+            return
+        try:
+            for _ in range(repeat):
+                Beep(frequency, duration)
+        except RuntimeError:
+            self.beep_fail = True
+            showerror(message='Could not beep.\nProgram will continue without beeping between cycles.')
+
 
     def is_entry_valid(self):
         try:
