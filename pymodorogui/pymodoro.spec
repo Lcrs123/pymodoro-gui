@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['pymodoro.py'],
-             pathex=['C:\\Users\\decon.lucasc\\PycharmProjects\\pymodoro'],
+             pathex=[],
              binaries=[],
              datas=[
              ('resources/icon.png','resources'),

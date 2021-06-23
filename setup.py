@@ -6,8 +6,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setuptools.setup(
     name='pymodoro-gui',
     packages=setuptools.find_packages(),
-    package_data={'pymodoro-gui.resources':['beep.wav','icon.png']},
-    version='1.4',
+    package_data={'pymodorogui.resources':['beep.wav','icon.png']},
+    version='1.4.1',
     license='GPL 3.0',
     description='A pomodoro app with a GUI for Windows',
     long_description=long_description,

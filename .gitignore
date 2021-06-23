@@ -34,7 +34,7 @@ MANIFEST
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
-!pymodoro-gui/pymodoro.spec
+!pymodorogui/pymodoro.spec
 
 # Installer logs
 pip-log.txt

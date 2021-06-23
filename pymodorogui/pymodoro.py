@@ -4,7 +4,7 @@ from tkinter.messagebox import showerror
 from tkinter.ttk import *
 from winsound import Beep, PlaySound, SND_FILENAME
 from itertools import cycle
-from resources import BEEP_PATH, ICON_PATH
+from pymodorogui.resources import BEEP_PATH, ICON_PATH
 
 class PomodoroApp(tkinter.Tk):
   BEEP_PATH = BEEP_PATH
