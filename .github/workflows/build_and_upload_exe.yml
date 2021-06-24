@@ -31,8 +31,7 @@ jobs:
     name: Download and push to executable branch
     needs: job_1
     runs-on: ubuntu-latest
-    environment:
-      name: gitinfo      
+    environment: gitinfo      
     steps:
     
     - uses: actions/checkout@v2
@@ -49,8 +48,8 @@ jobs:
         
     - name: Add and commit
       run: |
-          git config --local user.email '${{ env.EMAIL }}'
-          git config --local user.name '${{ env.AUTHOR }}'
+          git config --local user.email '${{ secrets.EMAIL }}'
+          git config --local user.name '${{ secrets.AUTHOR }}'
           git add Executable/
           git commit -m "New executable"
           
