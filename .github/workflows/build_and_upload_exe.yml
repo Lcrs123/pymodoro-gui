@@ -31,6 +31,8 @@ jobs:
     name: Download and push to executable branch
     needs: job_1
     runs-on: ubuntu-latest
+    environment:
+      name: gitinfo      
     steps:
     
     - uses: actions/checkout@v2
@@ -45,10 +47,10 @@ jobs:
         name: pymodoro
         path: Executable/    
         
-    - name: Add and commit 
+    - name: Add and commit
       run: |
-          git config --local user.email "lucascamillo333@hotmail.com"
-          git config --local user.name "Lucas Camillo"
+          git config --local user.email ${{ env.EMAIL }}
+          git config --local user.name ${{ env.AUTHOR }}
           git add Executable/
           git commit -m "New executable"
           
