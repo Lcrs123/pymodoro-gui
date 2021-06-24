@@ -31,8 +31,22 @@ jobs:
     name: Download and push to executable branch
     needs: job_1
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            asset_name_suffix: ''
+            asset_content_type: application/octet-stream
+          - os: windows-latest
+            asset_name_suffix: .exe
+            asset_content_type: application/octet-stream
+          - os: macOS-latest
+            asset_name_suffix: ''
+            asset_content_type: application/octet-stream
+    
     environment: gitinfo      
-    steps:
+    
+    steps:    
     
     - uses: actions/checkout@v2
       with:
@@ -41,6 +55,7 @@ jobs:
         fetch-depth: 0
         
     - name: Download a Build Artifact
+      id: download_artifact
       uses: actions/download-artifact@v2.0.9
       with:
         name: pymodoro
@@ -58,3 +73,27 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: executable
+
+    - uses: tubone24/setup-nim-action@v1.0.1
+    - name: Install Dependencies
+      run: nimble install -d --accept
+    - name: Build
+      run: nimble build -d:release
+    - name: get version
+      id: get_version
+      run: |
+        echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+    - name: update release
+      id: update_release
+      uses: tubone24/update_release@v1.0
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.github_token }}
+      with:
+        upload_url: ${{ steps.update_release.outputs.upload_url }}
+        asset_path: /home/runner/work/pymodoro-gui/pymodoro-gui/Executable/pymodoro.exe
+        asset_name: pymodoro_${{ steps.get_version.outputs.VERSION }}.exe
+        asset_content_type: ${{ matrix.asset_content_type }}
