@@ -49,8 +49,8 @@ jobs:
         
     - name: Add and commit
       run: |
-          git config --local user.email ${{ env.EMAIL }}
-          git config --local user.name ${{ env.AUTHOR }}
+          git config --local user.email '${{ env.EMAIL }}'
+          git config --local user.name '${{ env.AUTHOR }}'
           git add Executable/
           git commit -m "New executable"
           
